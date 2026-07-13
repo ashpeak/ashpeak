@@ -1,0 +1,38 @@
+name: Update README Trophy
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  generate-trophy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate trophy card
+        uses: soulteary/github-profile-trophy-action@v1.0.0
+        with:
+          options: "username=ashpeak&theme=radical&column=7&margin-w=10&margin-h=10&no-frame=true&no-bg=true"
+          path: assets/trophy.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit updated trophy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add assets/trophy.svg
+
+          if git diff --cached --quiet; then
+            echo "No trophy changes to commit."
+          else
+            git commit -m "chore: update GitHub trophies"
+            git push
+          fi
